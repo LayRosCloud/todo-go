@@ -1,0 +1,7 @@
+port: 8080
+datasource:
+  host: 127.0.0.1
+  port: 6666
+  username: postgres
+  schema: postgres
+  sslmode: disable
