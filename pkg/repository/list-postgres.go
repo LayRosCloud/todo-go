@@ -39,19 +39,26 @@ func (l *ListPostgres) FindById(id int64) (*entity.TodoList, error) {
 func (l *ListPostgres) Create(list entity.TodoList, userId int64) (int64, error) {
 	var id int64
 	var tempId int64
-	query := fmt.Sprintf("INSERT INTO %s (title, description) VALUES ($1, $2) RETURNING id", todoListsTable)
-	row := l.db.QueryRow(query, list.Title, list.Description)
-	err := row.Scan(&id)
+	tx, err := l.db.Begin()
 	if err != nil {
+		return 0, err
+	}
+	query := fmt.Sprintf("INSERT INTO %s (title, description) VALUES ($1, $2) RETURNING id", todoListsTable)
+	row := tx.QueryRow(query, list.Title, list.Description)
+	err = row.Scan(&id)
+	if err != nil {
+		tx.Rollback()
 		return 0, err
 	}
 
 	query = fmt.Sprintf("INSERT INTO %s (list_id, user_id) VALUES ($1, $2) RETURNING id", usersListsTable)
-	row = l.db.QueryRow(query, id, userId)
+	row = tx.QueryRow(query, id, userId)
 	err = row.Scan(&tempId)
 	if err != nil {
+		tx.Rollback()
 		return 0, err
 	}
+	tx.Commit()
 	return id, err
 }
 
