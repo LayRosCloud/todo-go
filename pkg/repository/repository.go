@@ -19,6 +19,7 @@ type TodoList interface {
 }
 
 type TodoItem interface {
+	//TODO
 }
 
 type Repository struct {

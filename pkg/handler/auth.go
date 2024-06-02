@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"github.com/layroscloud/todo-go/pkg/dto"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -26,13 +27,8 @@ func (h *Handler) SignUp(c *gin.Context) {
 	})
 }
 
-type SignInInput struct {
-	Username string `json:"username" binding:"required"`
-	Password string `json:"password" binding:"required"`
-}
-
 func (h *Handler) SignIn(c *gin.Context) {
-	var input SignInInput
+	var input dto.SignInDto
 
 	if err := c.BindJSON(&input); err != nil {
 		NewErrorResponse(c, http.StatusBadRequest, err.Error())
